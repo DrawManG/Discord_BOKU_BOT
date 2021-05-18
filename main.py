@@ -55,8 +55,8 @@ async def G(ctx):
      read_massive = open('Game.txt')
      for line in read_massive:
         edit_file.append(str(line))
-     vibor = random.randint(0, len(edit_file))
-     await ctx.send("Бот выбрал игру: " + str(edit_file[vibor]))
+     vibor = random.randint(1, len(edit_file))
+     await ctx.send("Бот выбрал игру: " + str(edit_file[vibor - 1]))
     except:
      await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
@@ -148,6 +148,29 @@ async def Grm(ctx, arg):
     await ctx.send('Игра удалена, теперь список такой: ' + str(edit_file))
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
+
+@client_on.command(pass_context=True)
+async def Gid(ctx, arg):
+        test_num = []
+        edit_file = []
+        games=[]
+        read_massive = open('Game.txt')
+        for line in read_massive:
+            edit_file.append(str(line).replace("\n", ""))
+        read_massive.close()
+
+        for num in list(arg):
+            print(num)
+            num = int(num)- 1 # id
+            games.append(edit_file[num])
+            #random_id.append(edit_file[num])
+        i = 0
+
+        #выше код для сортировки ввода
+        print('123        ' + str(len(str(set(games)))))
+        vibor = random.randint(0, len(games) - 1 )
+
+        await ctx.send('Из игр: '+str(set(games))+ ' я выбрал : ' + str(games[vibor]))
 
 
 

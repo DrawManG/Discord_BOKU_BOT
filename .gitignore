@@ -265,3 +265,4 @@ __pycache__/
 2.BMP
 2.PNG
 conf.py
+.gitignore.txt
