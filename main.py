@@ -6,15 +6,31 @@ from discord.ext.commands import bot
 
 import conf
 
+'''
+Создатель DrawManG : https://github.com/DrawManG/
+Информация о боте в кратце....
+В начале идёт подключение и включение бота. Если всё гуд то напишет bot_start!
+Комманды, которые выполняет бот на данный момент:
+
+"-T" - показывает сколько дней осталось до прибытия Тимика из армухи 
+"-W" - показывает погоду на сегодняшний день 
+“-G” - рандомно выбирает игру из списка
+”-Gview” - показать список игр
+“-Gadd“ - добавить игру (без пробелов «-Gadd CS1.6»)
+“-Gdel“ - удалить игру (-Gdel DOTA2)
+"-Grm" - удалить игру по ID (-Grm 1) [айди начинается с 1]
+“-G_cb“ - восстановить массив игр прежним
+"-Gid" - Берёт рандом из выбранных игр (пример: "-Gid 123" и из этих 3-ёх игр он делает рандом. Можно цифры повторять! (но шанс тогда выпода этого числа увеличивается)
+
+'''
+
+#подруб
 client_on = commands.Bot(command_prefix='-')
-
-
-# .help
-
 @client_on.event
+#если гуд подруб то пишет это
 async def on_ready():
     print('bot_start')
-
+#Команда возврата друга из армухи
 @client_on.command(pass_context=True)
 async def T(ctx):
     try:
@@ -29,10 +45,9 @@ async def T(ctx):
     except:
      await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
-
+# Парсер погоды в бот (лень было разбираться с библиотеками)
 @client_on.command(pass_context=True)
 async def W(ctx):
-    #try:
      import requests
      from bs4 import BeautifulSoup
 
@@ -42,11 +57,8 @@ async def W(ctx):
      quotes = soup.find_all('td', class_='temper')
      pogoda_now = str(quotes[1]).replace('<td class="temper">', '').replace('</td>', '')
      await ctx.send("Погода сейчас: " + str(pogoda_now))
-    #except:
-     #await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
-
-
+#Генератор игры в какую играть
 @client_on.command(pass_context=True)
 
 async def G(ctx):
@@ -60,11 +72,13 @@ async def G(ctx):
     except:
      await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
+#Тестовая тема, по идеи он должен был кидать стикер, но он другого мнения
 @client_on.command(pass_context=True)
 async def S(ctx,arg):
     if str(arg) == 'вояка':
         await ctx.send(':voyaka: ')
 
+#Добавление игры в список
 @client_on.command(pass_context=True)
 async def Gadd(ctx, arg):
   try:
@@ -84,6 +98,7 @@ async def Gadd(ctx, arg):
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
+#Удаление игры из списка
 @client_on.command(pass_context=True)
 async def Gdel(ctx, arg):
   try:
@@ -104,6 +119,7 @@ async def Gdel(ctx, arg):
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
 
+#Показать все игры
 @client_on.command(pass_context=True)
 async def Gview(ctx):
   try:
@@ -115,7 +131,7 @@ async def Gview(ctx):
     await ctx.send('Ваш список игр: ' + str(edit_file))
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
-
+#Не знаю зачем она нужна, так как по факту статического списка нет... Ну вообщем он возвращает список в такой вид
 @client_on.command(pass_context=True)
 async def G_cb(ctx):
   try:
@@ -129,7 +145,21 @@ async def G_cb(ctx):
     await ctx.send('Игры восстановлены к заводским параметрам: ' + str(edit_file))
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
-
+#Очищалка всех игр
+@client_on.command(pass_context=True)
+async def G_clear(ctx):
+  try:
+    edit_file = []
+    file = open('Game.txt', 'w')
+    i = 0
+    while i < len(edit_file):
+        file.write(edit_file[i] + "\n")
+        i = i + 1
+    file.close()
+    await ctx.send('Игры восстановлены к заводским параметрам: ' + str(edit_file))
+  except:
+      await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
+#Удалить по айди игру из списка
 @client_on.command(pass_context=True)
 async def Grm(ctx, arg):
   try:
@@ -148,7 +178,7 @@ async def Grm(ctx, arg):
     await ctx.send('Игра удалена, теперь список такой: ' + str(edit_file))
   except:
       await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
-
+#Зарандомить игру из выбранного списка (айдишек)
 @client_on.command(pass_context=True)
 async def Gid(ctx, arg):
         test_num = []
@@ -158,22 +188,17 @@ async def Gid(ctx, arg):
         for line in read_massive:
             edit_file.append(str(line).replace("\n", ""))
         read_massive.close()
-
         for num in list(arg):
             print(num)
             num = int(num)- 1 # id
             games.append(edit_file[num])
-            #random_id.append(edit_file[num])
         i = 0
-
         #выше код для сортировки ввода
         print('123        ' + str(len(str(set(games)))))
         vibor = random.randint(0, len(games) - 1 )
-
         await ctx.send('Из игр: '+str(set(games))+ ' я выбрал : ' + str(games[vibor]))
 
-
-
+#Админ комманды, но они пока не понадобятся...
 @client_on.command(pass_context=True)
 async def ADMIN_COMMAND_INFO(ctx, arg):
   try:
@@ -193,17 +218,11 @@ async def ADMIN_COMMAND_INFO(ctx, arg):
          img = ImageGrab.grab()
          img.save("2.PNG", "PNG")
          await ctx.send('Пошёл нахуй чертила :D')
-         #await ctx.send(file=discord.File('2.PNG'))
+         #await ctx.send(file=discord.File('2.PNG')) -- Если нужно выслать картинку рабочего стола.
   except:
             await ctx.send('Или ты чёт не так делаешь, или команда больше не работает')
-
-
-
-
-
-
-
-
-# connect
 token = conf.TOKEN
 client_on.run(token)
+'''
+version 1.6
+'''
